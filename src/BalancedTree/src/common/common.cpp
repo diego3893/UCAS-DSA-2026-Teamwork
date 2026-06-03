@@ -14,7 +14,7 @@ void initTree(){
     return;
 }
 
-int newNode(int key) {
+int newNode(int key){
     if(!garbageBin.empty()){ // 优先使用已申请但被删除的节点
         int reusedIdx = garbageBin.back();
         garbageBin.pop_back();
