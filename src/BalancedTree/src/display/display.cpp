@@ -18,7 +18,7 @@ void showTree(){
         for(int i=0; i<cur.height; ++i){
             printf("-");
         }
-        printf("%c\n", cur.key);
+        printf("%d\n", cur.key);
         if(cur.right){
             s.push(tree[cur.right]);
         }
