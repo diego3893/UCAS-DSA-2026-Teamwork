@@ -195,3 +195,70 @@ bool AVL_search(int key){
     }
     return 0;
 }
+
+/**
+ * @brief 在AVL树中插入AVL树
+ * 
+ * @param destRoot 目标树的根
+ * @param srcNode 将要插入的树根
+ * @return int 新树的根
+ */
+static int mergeTraversal(int destRoot, int srcNode){
+    if(!srcNode){
+        return destRoot;
+    }
+    int leftChild = tree[srcNode].left;
+    int rightChild = tree[srcNode].right;
+    
+    bool dummy = false; // 占位符
+    destRoot = insertNode(destRoot, tree[srcNode].key, dummy);
+    deleteNode(srcNode);
+    
+    destRoot = mergeTraversal(destRoot, leftChild);
+    destRoot = mergeTraversal(destRoot, rightChild);
+    
+    return destRoot;
+}
+
+int AVL_merge(int t1, int t2){
+    return mergeTraversal(t1, t2);
+}
+
+
+/**
+ * @brief 分裂一棵AVL
+ * 
+ * @param srcNode 源树根
+ * @param val 分裂的值
+ * @param outLeft 左树根（<=val）
+ * @param outRight 右树根（>val）
+ */
+static void splitTraversal(int srcNode, int val, int& outLeft, int& outRight){
+    if(!srcNode){
+        return;
+    }
+
+    int leftChild = tree[srcNode].left;
+    int rightChild = tree[srcNode].right;
+    
+    bool dummy = false;
+    if(tree[srcNode].key <= val){
+        outLeft = insertNode(outLeft, tree[srcNode].key, dummy);
+    }else{
+        outRight = insertNode(outRight, tree[srcNode].key, dummy);
+    }
+    
+    deleteNode(srcNode);
+    
+    splitTraversal(leftChild, val, outLeft, outRight);
+    splitTraversal(rightChild, val, outLeft, outRight);
+    return;
+}
+
+pair<int, int> AVL_split(int root, int val){
+    int leftTreeRoot = 0;
+    int rightTreeRoot = 0;
+    splitTraversal(root, val, leftTreeRoot, rightTreeRoot);
+    
+    return {leftTreeRoot, rightTreeRoot};
+}

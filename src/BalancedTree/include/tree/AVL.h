@@ -1,6 +1,8 @@
 #ifndef AVL_H
 #define AVL_H
 
+#include <utility>
+
 /**
  * @brief 使用AVL树进行插入操作
  * 
@@ -25,5 +27,21 @@ void AVL_remove(int key);
  * @return false 查找失败
  */
 bool AVL_search(int key);
+
+/**
+ * @brief 将两棵 AVL 树合并
+ * @param t1 第一棵树的根节点
+ * @param t2 第二棵树的根节点
+ * @return int 合并后的根节点
+ */
+int AVL_merge(int t1, int t2);
+
+/**
+ * @brief 按值x分裂AVL
+ * @param root 要分裂的原树根节点
+ * @param val 分裂参考值
+ * @return std::pair<int, int> 左树根，右树根
+ */
+std::pair<int, int> AVL_split(int root, int val);
 
 #endif // AVL_H
