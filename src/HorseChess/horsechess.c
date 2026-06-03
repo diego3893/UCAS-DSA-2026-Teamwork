@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 // 马的8个移动方向
 const int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
