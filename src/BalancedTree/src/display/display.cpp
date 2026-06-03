@@ -54,12 +54,12 @@ static void printTreap(int idx, int space){
 
 
 
-void showAVLTree(){
-    if(!rootIndex){
+void showAVLTree(int root){
+    if(!root){
         printf(" [当前为空树]\n");
         return;
     }
-    printAVLTree(rootIndex, 0);
+    printAVLTree(root, 0);
     return;
 }
 
