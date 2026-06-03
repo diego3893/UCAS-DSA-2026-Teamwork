@@ -1,5 +1,5 @@
-#include "display.h"
-#include "common.h"
+#include "display/display.h"
+#include "common/common.h"
 #include <stack>
 #include <cstdio>
 
