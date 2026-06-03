@@ -33,12 +33,11 @@ int main(){
             case 1:
                 printf("请输入要插入的关键字: ");
                 scanf("%d", &key);
-                if(AVL_search(key)){
-                    printf("该键值已存在！请重新插入\n");
-                    break;
+                if(AVL_insert(key)){
+                    printf("[成功] 结点 %d 已插入。\n", key);
+                }else{
+                    printf("键值重复，插入失败！\n");
                 }
-                AVL_insert(key);
-                printf("[成功] 结点 %d 已插入。\n", key);
                 break;
 
             case 2:
