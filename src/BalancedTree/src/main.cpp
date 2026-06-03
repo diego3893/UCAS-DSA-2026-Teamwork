@@ -4,6 +4,7 @@
 #include "tree/treap.h"
 #include <windows.h>
 #include <cstdio>
+#include <utility>
 
 using namespace std;
 
@@ -26,6 +27,7 @@ int main(){
         printf("  2. 删除结点 (Delete)\n");
         printf("  3. 查找结点 (Search)\n");
         printf("  4. [选作] 分裂、合并平衡二叉树 (基于 FHQ Treap)\n");
+        printf("  5. [选作] 分裂、合并平衡二叉树 (基于 AVL)\n");
         printf("  0. 退出程序 (Exit)\n");
         printf(">> ");
         
@@ -77,7 +79,7 @@ int main(){
                 showTreap(sub_trees.first);
                 printf("\n=== 分裂出的第二棵树 (> %d) ===\n", split_val);
                 showTreap(sub_trees.second);
-                
+
                 printf("\n=== 两棵树合并后如下 ===\n");
                 fhq_root = FHQ_merge(sub_trees.first, sub_trees.second);
                 showTreap(fhq_root);
@@ -85,16 +87,34 @@ int main(){
                 printf("\n(注：此操作在独立沙盒中演示，不影响原 AVL 树结构)\n");
                 break;
             }
+            case 5: {
+                printf("请输入分裂参考值 x (<=x 和 >x): ");
+                int split_val;
+                scanf("%d", &split_val);
 
-
-            case 0:
+                pair<int, int> sub_trees = AVL_split_tree(rootIndex, split_val);
+                
+                rootIndex = 0; 
+                
+                printf("\n=== 分裂出的第一棵树 (<= %d) ===\n", split_val);
+                showAVLTree(sub_trees.first); 
+                printf("\n=== 分裂出的第二棵树 (> %d) ===\n", split_val);
+                showAVLTree(sub_trees.second);
+                printf("\n=== 两棵树合并后如下 ===\n");
+                rootIndex = AVL_merge_trees(sub_trees.first, sub_trees.second);
+                showAVLTree();
+                
+                break;
+            }
+            case 0:{
                 printf("程序退出\n");
                 system("pause");
                 return 0;
-
-            default:
+            }
+            default:{
                 printf("无效的选项，请重新选择\n");
                 break;
+            }
         }
         system("pause");
         system("cls");
