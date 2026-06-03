@@ -40,4 +40,4 @@ cmake -G "MinGW Makefiles" ..
 mingw32-make
 ```
 - 编译方法2：使用写好的批处理脚本，在根目录中输入下列指令`cmake_build.bat`
-- 运行方法：双击build/中的P2PChessGame.exe或者在根目录中`./build/BalancedTree.exe`
+- 运行方法：双击build/中的BalancedTree.exe或者在根目录中`./build/BalancedTree.exe`
