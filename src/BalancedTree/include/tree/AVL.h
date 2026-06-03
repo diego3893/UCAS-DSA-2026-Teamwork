@@ -5,8 +5,10 @@
  * @brief 使用AVL树进行插入操作
  * 
  * @param key 插入的键值
+ * @return true 插入成功
+ * @return false 键值重复，插入失败
  */
-void AVL_insert(int key);
+bool AVL_insert(int key);
 
 /**
  * @brief 使用AVL树进行删除操作
