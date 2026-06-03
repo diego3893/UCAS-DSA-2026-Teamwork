@@ -23,3 +23,21 @@
   - 查找是显然的，利用BST的性质即可
   - 插入时，首先判断是否重复，然后添加节点，向上更新bf和height，不断旋转、平衡
   - 删除时，利用和B树相似的思路，如果是叶子或者只有单一子树，直接删除；如果有两颗子树，找中序后继，将后继复制到当前为止，再在右子树删中序后继，即将有两棵子树的内部节点转换为只有至多一棵子树的节点来删除
+
+## 3 编译运行方法
+- 使用CMake和MinGW编译，仅支持**windows**环境
+- 请先检查环境是否安装好，输入下列指令后若能输出对应版本号，则环境配置完成
+```bash
+gcc -v
+cmake --version
+mingw32-make -v
+```
+- 编译方法1：先进入项目根目录，输入下列指令：
+```bash
+mkdir build
+cd build
+cmake -G "MinGW Makefiles" ..
+mingw32-make
+```
+- 编译方法2：使用写好的批处理脚本，在根目录中输入下列指令`cmake_build.bat`
+- 运行方法：双击build/中的P2PChessGame.exe或者在根目录中`./build/BalancedTree.exe`
