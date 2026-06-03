@@ -92,7 +92,7 @@ int main(){
                 int split_val;
                 scanf("%d", &split_val);
 
-                pair<int, int> sub_trees = AVL_split_tree(rootIndex, split_val);
+                pair<int, int> sub_trees = AVL_split(rootIndex, split_val);
                 
                 rootIndex = 0; 
                 
@@ -101,7 +101,7 @@ int main(){
                 printf("\n=== 分裂出的第二棵树 (> %d) ===\n", split_val);
                 showAVLTree(sub_trees.second);
                 printf("\n=== 两棵树合并后如下 ===\n");
-                rootIndex = AVL_merge_trees(sub_trees.first, sub_trees.second);
+                rootIndex = AVL_merge(sub_trees.first, sub_trees.second);
                 showAVLTree();
                 
                 break;
