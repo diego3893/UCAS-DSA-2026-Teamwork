@@ -13,7 +13,7 @@ typedef struct{
 StackNode stack[64];// 棋子最多只能走64步
 int top = -1;// 栈的初始化
 
-#define pop() stack[top--]
+#define pop() (void)stack[top--]
 #define isEmpty() (top == -1)
 
 void push(StackNode node){
@@ -28,9 +28,9 @@ int main(){
     int board[8][8] = {0};// 0表示未访问，1~63表示访问顺序
     int startX, startY;// 输入的初始坐标
 
-    printf("请输入棋子的初始坐标(i,j),i、j取值范围为0~7的整数，中间用空格符相隔：");
+    printf("Please enter the initial coordinates (i, j) (0~7, separated by space): ");
     while ((scanf("%d %d",&startX,&startY) != 2) || (startX < 0) || (startX >=8) || (startY < 0) || (startY >= 8)){
-        printf("输入格式不符合要求，请重新输入！");
+        printf("Invalid input format, please try again!\n");
         while (getchar() != '\n');// 清空输入缓冲区
     }
 
@@ -74,7 +74,7 @@ int main(){
             pop();
             step--;
             if (isEmpty()){
-                printf("未找到路线！\n");
+                printf("No valid path found!\n");
                 return 1;
             }
             continue;
@@ -117,13 +117,13 @@ int main(){
             pop();
             step--;
             if (isEmpty()){
-                prinf("未找到路线！\n");
+                printf("No valid path found!\n");
                 return 1;
             }
         }
     }
 
-    printf("\n马踏棋盘完整路线如下：\n");
+    printf("\nKnight's tour complete path:\n");
     for (int i = 0; i < 8; i++){
         for (int j = 0; j < 8; j++){
             printf("%4d",board[i][j]);
