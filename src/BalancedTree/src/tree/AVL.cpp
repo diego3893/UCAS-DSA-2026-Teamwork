@@ -4,26 +4,38 @@
 
 using namespace std;
 
-// ==========================================
-// 辅助函数与旋转操作
-// ==========================================
-
-static int getHeight(int idx) {
+/**
+ * @brief 求高度信息
+ * 
+ * @param idx 节点下标
+ * @return int 高度信息
+ */
+static int getHeight(int idx){
     return idx ? tree[idx].height : 0;
 }
 
-// 核心状态更新：同时计算高度和平衡因子
-static void updateNode(int idx) {
-    if (idx) {
+/**
+ * @brief 更新高度和平衡因子
+ * 
+ * @param idx 节点下标
+ */
+static void updateNode(int idx){
+    if(idx){
         int lh = getHeight(tree[idx].left);
         int rh = getHeight(tree[idx].right);
-        tree[idx].height = 1 + max(lh, rh);
-        tree[idx].bf = rh - lh; // 右边减左边
+        tree[idx].height = 1+max(lh, rh);
+        tree[idx].bf = rh-lh; 
     }
+    return;
 }
 
-// 右旋
-static int rightRotate(int y) {
+/**
+ * @brief 右旋
+ * 
+ * @param y 要右旋的不平衡的节点
+ * @return int 旋转后的子树根
+ */
+static int rightRotate(int y){
     int x = tree[y].left;
     tree[y].left = tree[x].right;
     tree[x].right = y;
@@ -33,8 +45,13 @@ static int rightRotate(int y) {
     return x;
 }
 
-// 左旋
-static int leftRotate(int x) {
+/**
+ * @brief 左旋
+ * 
+ * @param x 要左旋的不平衡的节点
+ * @return int 旋转后的子树根
+ */
+static int leftRotate(int x){
     int y = tree[x].right;
     tree[x].right = tree[y].left;
     tree[y].left = x;
@@ -44,38 +61,47 @@ static int leftRotate(int x) {
     return y;
 }
 
-// ==========================================
-// 内部递归核心逻辑
-// ==========================================
-
-static int insertNode(int idx, int key) {
-    if (idx == 0) return newNode(key);
-
-    if (key < tree[idx].key) {
-        tree[idx].left = insertNode(tree[idx].left, key);
-    } else if (key > tree[idx].key) {
-        tree[idx].right = insertNode(tree[idx].right, key);
-    } else {
+/**
+ * @brief 插入节点
+ * 
+ * @param idx 平衡树的根
+ * @param key 插入的键值
+ * @return int 平衡后的根
+ */
+static int insertNode(int idx, int key, bool& isInserted){
+    if(!idx){
+        isInserted = 1;
+        return newNode(key);
+    }
+    if(key < tree[idx].key){
+        //修复：临时变量存扩容结果，避免vector扩容导致地址丢失而赋值失败
+        int nextLeft = insertNode(tree[idx].left, key, isInserted);
+        tree[idx].left = nextLeft;
+    }else if(key > tree[idx].key){
+        int nextRight = insertNode(tree[idx].right, key, isInserted);
+        tree[idx].right = nextRight;
+    }else{
+        isInserted = 0;
         return idx; // 忽略重复插入
     }
 
-    // 重新计算状态
-    updateNode(idx);
+    updateNode(idx); // 更新插入后的节点信息
 
-    // 平衡维护
-    if (tree[idx].bf < -1) {
-        if (tree[tree[idx].left].bf <= 0) {
-            return rightRotate(idx);
-        } else {
-            tree[idx].left = leftRotate(tree[idx].left);
+    if(tree[idx].bf < -1){ // 左侧更高
+        if(tree[tree[idx].left].bf <= 0){
+            return rightRotate(idx); // RR
+        }else{
+            int newLeft = leftRotate(tree[idx].left); // LR
+            tree[idx].left = newLeft;
             return rightRotate(idx);
         }
     }
-    if (tree[idx].bf > 1) {
-        if (tree[tree[idx].right].bf >= 0) {
-            return leftRotate(idx);
-        } else {
-            tree[idx].right = rightRotate(tree[idx].right);
+    if(tree[idx].bf > 1){ // 右侧更高
+        if(tree[tree[idx].right].bf >= 0){
+            return leftRotate(idx); // LL
+        }else{
+            int newRight = rightRotate(tree[idx].right); // RL
+            tree[idx].right = newRight;
             return leftRotate(idx);
         }
     }
@@ -83,56 +109,59 @@ static int insertNode(int idx, int key) {
     return idx;
 }
 
-static int removeNode(int idx, int key) {
-    if (idx == 0) return 0; // 节点不存在
+/**
+ * @brief 删除节点，保证节点存在
+ * 
+ * @param idx 平衡树根
+ * @param key 删除的键值
+ * @return int 删除后的平衡树根
+ */
+static int removeNode(int idx, int key){
+    if(!idx){
+        return 0;
+    }
 
-    if (key < tree[idx].key) {
-        tree[idx].left = removeNode(tree[idx].left, key);
-    } else if (key > tree[idx].key) {
-        tree[idx].right = removeNode(tree[idx].right, key);
-    } else {
-        // 命中目标节点
-        if (tree[idx].left == 0 || tree[idx].right == 0) {
-            // 场景A：0 个或 1 个子节点
+    if(key < tree[idx].key){
+        int nextLeft = removeNode(tree[idx].left, key);
+        tree[idx].left = nextLeft;
+    }else if(key > tree[idx].key){
+        int nextRight = removeNode(tree[idx].right, key);
+        tree[idx].right = nextRight;
+    }else{ // 找到节点
+        if(!tree[idx].left || !tree[idx].right){ // 至多一棵子树
             int temp = tree[idx].left ? tree[idx].left : tree[idx].right;
-            
-            // 【重点】：将当前物理节点丢入回收站！
             deleteNode(idx);
-            
             return temp;
-        } else {
-            // 场景B：2 个子节点
+        }else{ // 如果两棵子树
+            // 找它的中序直接后继
             int successor = tree[idx].right;
-            while (tree[successor].left != 0) {
+            while(tree[successor].left){
                 successor = tree[successor].left;
             }
+            tree[idx].key = tree[successor].key; // 将后继复制过来，再删除右子树的后继节点
             
-            // 值替换（狸猫换太子）
-            tree[idx].key = tree[successor].key; 
-            
-            // 递归去右子树删除真正的“替身”物理节点
-            // 替身节点必然符合场景A，它会在递归底层被 deleteNode 回收
-            tree[idx].right = removeNode(tree[idx].right, tree[successor].key);
+            int nextRight = removeNode(tree[idx].right, tree[successor].key);
+            tree[idx].right = nextRight;
         }
     }
 
-    // 重新计算状态
     updateNode(idx);
 
-    // 平衡维护 (复用插入的逻辑)
-    if (tree[idx].bf < -1) {
-        if (tree[tree[idx].left].bf <= 0) {
-            return rightRotate(idx);
-        } else {
-            tree[idx].left = leftRotate(tree[idx].left);
+    if(tree[idx].bf < -1){
+        if (tree[tree[idx].left].bf <= 0){
+            return rightRotate(idx); // RR
+        }else{
+            int newLeft = leftRotate(tree[idx].left); // LR
+            tree[idx].left = newLeft;
             return rightRotate(idx);
         }
     }
-    if (tree[idx].bf > 1) {
-        if (tree[tree[idx].right].bf >= 0) {
-            return leftRotate(idx);
-        } else {
-            tree[idx].right = rightRotate(tree[idx].right);
+    if(tree[idx].bf > 1){
+        if(tree[tree[idx].right].bf >= 0){
+            return leftRotate(idx); // LL
+        }else{
+            int newRight = rightRotate(tree[idx].right); // RL
+            tree[idx].right = newRight;
             return leftRotate(idx);
         }
     }
@@ -140,24 +169,96 @@ static int removeNode(int idx, int key) {
     return idx;
 }
 
-// ==========================================
-// 对外业务接口实现
-// ==========================================
 
-void AVL_insert(int key) {
-    rootIndex = insertNode(rootIndex, key);
+bool AVL_insert(int key){
+    bool isInserted = 0;
+    rootIndex = insertNode(rootIndex, key, isInserted);
+    return isInserted;
 }
 
-void AVL_remove(int key) {
+void AVL_remove(int key){
     rootIndex = removeNode(rootIndex, key);
+    return;
 }
 
-bool AVL_search(int key) {
-    int curr = rootIndex;
-    while (curr != 0) {
-        if (key == tree[curr].key) return true;
-        if (key < tree[curr].key) curr = tree[curr].left;
-        else curr = tree[curr].right;
+bool AVL_search(int key){
+    int cur = rootIndex;
+    while(cur){
+        if(key == tree[cur].key){
+            return 1;
+        }
+        if(key < tree[cur].key){
+            cur = tree[cur].left;
+        }else{
+            cur = tree[cur].right;
+        }
     }
-    return false;
+    return 0;
+}
+
+/**
+ * @brief 在AVL树中插入AVL树
+ * 
+ * @param destRoot 目标树的根
+ * @param srcNode 将要插入的树根
+ * @return int 新树的根
+ */
+static int mergeTraversal(int destRoot, int srcNode){
+    if(!srcNode){
+        return destRoot;
+    }
+    int leftChild = tree[srcNode].left;
+    int rightChild = tree[srcNode].right;
+    
+    bool dummy = false; // 占位符
+    destRoot = insertNode(destRoot, tree[srcNode].key, dummy);
+    deleteNode(srcNode);
+    
+    destRoot = mergeTraversal(destRoot, leftChild);
+    destRoot = mergeTraversal(destRoot, rightChild);
+    
+    return destRoot;
+}
+
+int AVL_merge(int t1, int t2){
+    return mergeTraversal(t1, t2);
+}
+
+
+/**
+ * @brief 分裂一棵AVL
+ * 
+ * @param srcNode 源树根
+ * @param val 分裂的值
+ * @param outLeft 左树根（<=val）
+ * @param outRight 右树根（>val）
+ */
+static void splitTraversal(int srcNode, int val, int& outLeft, int& outRight){
+    if(!srcNode){
+        return;
+    }
+
+    int leftChild = tree[srcNode].left;
+    int rightChild = tree[srcNode].right;
+    
+    bool dummy = false;
+    if(tree[srcNode].key <= val){
+        outLeft = insertNode(outLeft, tree[srcNode].key, dummy);
+    }else{
+        outRight = insertNode(outRight, tree[srcNode].key, dummy);
+    }
+    
+    deleteNode(srcNode);
+    
+    splitTraversal(leftChild, val, outLeft, outRight);
+    splitTraversal(rightChild, val, outLeft, outRight);
+    return;
+}
+
+pair<int, int> AVL_split(int root, int val){
+    int leftTreeRoot = 0;
+    int rightTreeRoot = 0;
+    splitTraversal(root, val, leftTreeRoot, rightTreeRoot);
+    
+    return {leftTreeRoot, rightTreeRoot};
 }

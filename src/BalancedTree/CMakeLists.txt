@@ -15,6 +15,7 @@ set(SOURCES
     src/common/common.cpp
     src/tree/AVL.cpp
     src/display/display.cpp
+    src/tree/treap.cpp
 )
 
 # 5. 生成可执行文件
