@@ -21,7 +21,7 @@ static int top = -1;
 #define pop()    (void)stack[top--]
 #define isEmpty() (top == -1)
 
-// 模拟栈帧的 push
+// 模拟栈的 push
 static void push(StackNode node) {
     stack[++top] = node;
 }
@@ -57,14 +57,14 @@ static void printBoard(void) {
     printf("\n");
 }
 
-// 输出可视化棋盘 (K=骑士当前位置, *=已走过, .=未走过)
+// 输出可视化棋盘 (K=棋子当前位置, *=已走过, .=未走过)
 static void printPathBoard(void) {
     printf("\n  +----------------+\n");
     for (int i = 0; i < 8; i++) {
         printf("  |");
         for (int j = 0; j < 8; j++) {
             if (i == stack[top].x && j == stack[top].y)
-                printf(" K");          // 骑士当前位置
+                printf(" K");          // 棋子当前位置
             else if (board[i][j] > 0)
                 printf(" *");          // 已经走过的格子
             else
@@ -95,7 +95,7 @@ static int checkAbort(void) {
 // ==================== 核心搜索算法 ====================
 
 /**
- * @brief 使用Warnsdorff启发式 + 栈模拟DFS 搜索骑士周游
+ * @brief 使用Warnsdorff启发式 + 栈模拟DFS 
  *
  * @param startX 起始横坐标
  * @param startY 起始纵坐标
@@ -329,7 +329,7 @@ int main(void) {
         if (maxSolutions < 0) maxSolutions = 0;
         if (maxSolutions == 0) {
             printf("已设为\"不限\"模式 — 将搜索全部路线。\n");
-            printf("(提示: 8×8 棋盘的骑士周游超过 260 亿条, 实际无法穷举。)\n");
+            printf("(提示: 8×8 棋盘的马踏棋盘路线超过 260 亿条, 实际无法穷举。)\n");
             printf("(      搜索过程中可按 Q 键随时中止。)\n");
         } else if (maxSolutions > 10000) {
             printf("数量较大 (%d 条), 搜索可能需要较长时间。\n", maxSolutions);
@@ -352,7 +352,6 @@ int main(void) {
     }
     if (!found) {
         printf("未找到任何合法路径。\n");
-        printf("(对于 8x8 棋盘这通常不会发生 — 请检查算法。)\n");
     } else {
         printf("  起始位置:   (%d, %d)\n", startX, startY);
         printf("  找到路径数: %d\n", solutionsFound);
